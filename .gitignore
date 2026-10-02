@@ -1,0 +1,66 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+
+# Runtime data, customer records, queues, logs and delivery markers
+data/
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local editor/OS files
+.DS_Store
+.idea/
+.vscode/
+
+# One-off development scripts.
+# These probes, debuggers and screenshot helpers were written while building the
+# prototype. They hardcode this machine's absolute paths, and a book key is a
+# bearer credential that must never be committed. The published repository ships
+# the product, the test suites and the docs.
+/check_book_render.py
+/check_pages.py
+/debug_harness.py
+/debug_msg.py
+/debug_read.py
+/demo_en.py
+/demo_id.py
+/e2e_lang.py
+/fix_name_case.py
+/fresh_pack.py
+/lang_probe.py
+/live_turn.py
+/make_demo_book.py
+/name_check.py
+/preview_help.py
+/probe_lang.py
+/probe_lease.py
+/probe_msg.py
+/probe_write.py
+/replay_journal.py
+/scan_lang_leak.py
+/shot.js
+/shot_book.js
+/shot_check.py
+/shot_crosssession.js
+/shot_lang.js
+/shot_page.js
+/shot_pixels.js
+/shoot_web.js
+/tg_check.py
+/tg_menu.py
+/tg_pending.py
+/try_usd.py
+/try_usd2.py
+/verify_book.js
+/verify_home.js
+/verify_name_live.py
+/verify_switch.js
+/verify_ui.js
+/why_key.py
+/card.py
+/set_env.py

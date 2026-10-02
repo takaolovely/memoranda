@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memoranda</title>
+<meta name="description" content="Field notes for repeat service work. Track jobs, payments, debts and reminders you choose to set.">
+<meta name="theme-color" id="themeColor" content="#0b0d10">
+<meta property="og:title" content="Memoranda — field notes that don't forget">
+<meta property="og:description" content="Track repeat service work, payments and worker-set reminders in one durable field notebook.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0b0d10; --panel:#12151a; --line:#1e232b; --ink:#e8eaed; --dim:#a6aeba;
+    --accent:#4ade80; --warn:#fbbf24; --bad:#f87171; --chip:#1a1f27;
+    --soft:#b9c0ca; --button-ink:#08130c; --hero-glass:rgba(18,21,26,.78);
+  }
+  :root[data-theme="light"]{color-scheme:light;--bg:#f5f7f4;--panel:#fff;--line:#dce3dc;
+    --ink:#17211a;--dim:#536257;--accent:#168344;--warn:#895a00;--bad:#b42318;
+    --chip:#edf2ed;--soft:#36443a;--button-ink:#fff;--hero-glass:rgba(255,255,255,.82)}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);transition:background .2s,color .2s;
+       font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+  .glow{position:fixed;inset:0;pointer-events:none;z-index:0;
+        background:radial-gradient(760px 420px at 18% -8%,rgba(74,222,128,.13),transparent 62%),
+                   radial-gradient(700px 400px at 92% 6%,rgba(251,191,36,.07),transparent 60%)}
+  main,header,footer{position:relative;z-index:1}
+
+  /* header */
+  header{display:flex;align-items:center;gap:14px;padding:18px 0}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;
+         letter-spacing:-.2px}
+  .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(150deg,#4ade80,#22c55e);
+        display:grid;place-items:center;color:#08130c;font-weight:800;font-size:14px}
+  nav{margin-left:auto;display:flex;align-items:center;gap:6px}
+  nav a{padding:7px 11px;border-radius:9px;font-size:14px;color:var(--dim)}
+  nav a:hover{color:var(--ink);background:var(--chip)}
+  @media (max-width:720px){nav a.sec{display:none}}
+
+  /* buttons */
+  .btn{display:inline-block;padding:11px 18px;border-radius:11px;font-weight:600;
+       font-size:15px;border:1px solid transparent;cursor:pointer;transition:.15s}
+  .btn-p{background:var(--accent);color:var(--button-ink)}
+  .btn-p:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn-g{border-color:var(--line);color:var(--ink)}
+  .btn-g:hover{border-color:#2c333d;background:var(--chip)}
+
+  /* hero */
+  .hero{padding:64px 0 34px;max-width:760px}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--dim);
+         border:1px solid var(--line);background:var(--hero-glass);padding:5px 12px;
+         border-radius:99px;margin-bottom:22px}
+  .dot{width:6px;height:6px;border-radius:99px;background:var(--accent)}
+  h1{font-size:clamp(32px,5.4vw,52px);line-height:1.08;margin:0 0 18px;
+     letter-spacing:-1.4px;font-weight:800}
+  .sub{font-size:clamp(16px,2vw,18.5px);color:var(--soft);margin:0 0 30px;max-width:640px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .tiny{font-size:13px;color:var(--dim);margin-top:18px}
+
+  /* demo */
+  .demo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:38px 0 8px}
+  .demo-label{display:inline-block;font-size:11.5px;letter-spacing:.09em;
+              text-transform:uppercase;color:var(--dim);border:1px solid var(--line);
+              background:var(--hero-glass);padding:4px 10px;border-radius:99px;
+              margin:44px 0 -26px}
+  @media (max-width:780px){.demo{grid-template-columns:1fr}}
+  .pane{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .pane h3{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;
+           margin:0 0 14px;font-weight:600}
+  .bub{border-radius:12px;padding:11px 13px;font-size:14.5px;max-width:94%}
+  .bub.you{background:var(--chip);border:1px solid var(--line);margin-left:auto}
+  .bub.bot{background:color-mix(in srgb,var(--accent) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));color:var(--ink);margin-top:10px;
+           font-size:14px;white-space:pre-wrap}
+  .who{font-size:11px;color:var(--dim);margin-bottom:5px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;
+       border-top:1px solid var(--line);font-size:14.5px}
+  .row:first-of-type{border-top:0}
+  .row .k{color:var(--dim)}
+  .row .v{font-variant-numeric:tabular-nums}
+  .ok{color:var(--accent)}
+  .due{color:var(--warn)}
+  .note{font-size:12.5px;color:var(--dim);margin-top:14px}
+
+  /* sections */
+  section{padding:56px 0}
+  h2{font-size:clamp(22px,3vw,30px);margin:0 0 26px;letter-spacing:-.7px;font-weight:750}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:820px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;
+        transition:.18s}
+  .card:hover{border-color:#2c333d;transform:translateY(-2px)}
+  .card .n{width:24px;height:24px;border-radius:8px;background:var(--chip);color:var(--dim);
+           display:grid;place-items:center;font-size:12.5px;font-weight:700;margin-bottom:13px}
+  .card h4{margin:0 0 7px;font-size:16px;font-weight:650}
+  .card p{margin:0;color:var(--dim);font-size:14.5px}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.split{grid-template-columns:1fr}}
+  .quote{font-size:16.5px;color:var(--soft);margin:0}
+  .who-line{font-size:17px;color:var(--soft);max-width:680px}
+  .trust-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .trust-strip span{border:1px solid var(--line);background:var(--hero-glass);border-radius:999px;
+    padding:6px 11px;font-size:12px;color:var(--dim)}
+  .eyebrow{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin:0 0 9px}
+  .flow-note{border-left:2px solid var(--accent);padding:10px 13px;color:var(--soft);font-size:14px;margin:20px 0 0}
+  .card p + p{margin-top:10px}
+
+  /* final */
+  .final{background:linear-gradient(160deg,var(--panel),var(--bg));border:1px solid var(--line);
+         border-radius:20px;padding:38px 30px;text-align:center}
+  .final h2{margin-bottom:12px}
+  .final p{color:var(--dim);margin:0 0 24px}
+  footer{padding:34px 0 46px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);
+         margin-top:30px;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}
+  .theme{background:transparent;color:var(--ink);border:1px solid var(--line);cursor:pointer;
+         border-radius:9px;padding:7px 10px;font:inherit;font-size:13px}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  @media(max-width:520px){.wrap{padding-inline:17px}.hero{padding:44px 0 30px}.demo{margin-top:24px}
+    section{padding:38px 0}.pane{padding:15px}.btn{padding:10px 14px}header{gap:8px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<header class="wrap">
+  <div class="brand"><span class="mark">M</span><span id="brandName">Memoranda</span></div>
+  <nav>
+    <a class="sec" href="#cara" data-i18n="ld_how_title"></a>
+    <a class="sec" href="#walrus" data-i18n="ld_why_title"></a>
+    <button class="theme" id="themeBtn" type="button" aria-label="Switch color theme">Light mode</button>
+    <a class="btn btn-g" href="/app" data-i18n="ld_login"></a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <div class="badge"><span class="dot"></span><span data-i18n="ld_badge"></span></div>
+      <h1 data-i18n="ld_h1"></h1>
+      <p class="sub" data-i18n="ld_sub"></p>
+      <div class="cta">
+        <a class="btn btn-p" href="/app" data-i18n="ld_cta"></a>
+        <a class="btn btn-g" href="#cara" data-i18n="ld_cta2"></a>
+      </div>
+      <p class="tiny" data-i18n="ld_key_note"></p>
+      <div class="trust-strip" aria-label="Product principles">
+        <span>No account or wallet</span><span>Worker-controlled reminders</span><span>Amounts aren't guessed</span>
+      </div>
+    </div>
+
+    <p class="eyebrow" data-i18n="ld_demo_title"></p>
+    <div class="demo">
+      <div class="pane">
+        <h3 data-i18n="ld_demo_you"></h3>
+        <div class="bub you" data-i18n="ld_demo_in"></div>
+        <div class="bub bot" data-i18n="ld_demo_out"></div>
+        <div class="note" data-i18n="ld_demo_note"></div>
+      </div>
+      <div class="pane">
+        <h3 data-i18n="ld_demo_it"></h3>
+        <div class="row"><span class="k" data-i18n="ld_demo_r1k"></span><span class="v due" data-i18n="ld_demo_r1v"></span></div>
+        <div class="row"><span class="k" data-i18n="ld_demo_r2k"></span><span class="v" data-i18n="ld_demo_r2v"></span></div>
+        <div class="row"><span class="k" data-i18n="ld_demo_r3k"></span><span class="v due" data-i18n="ld_demo_r3v"></span></div>
+        <div class="row"><span class="k" data-i18n="ld_demo_r4k"></span><span class="v" data-i18n="ld_demo_r4v"></span></div>
+        <div class="row"><span class="k" data-i18n="ld_demo_r5k"></span><span class="v ok" data-i18n="ld_demo_r5v"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section>
+      <h2 data-i18n="ld_pain_title"></h2>
+      <div class="cards">
+        <div class="card"><div class="n">1</div><p data-i18n="ld_pain1"></p></div>
+        <div class="card"><div class="n">2</div><p data-i18n="ld_pain2"></p></div>
+        <div class="card"><div class="n">3</div><p data-i18n="ld_pain3"></p></div>
+      </div>
+    </section>
+
+    <section id="cara">
+      <h2 data-i18n="ld_how_title"></h2>
+      <div class="cards">
+        <div class="card"><div class="n">1</div><h4 data-i18n="ld_how1_t"></h4>
+          <p data-i18n="ld_how1_b"></p></div>
+        <div class="card"><div class="n">2</div><h4 data-i18n="ld_how2_t"></h4>
+          <p data-i18n="ld_how2_b"></p></div>
+        <div class="card"><div class="n">3</div><h4 data-i18n="ld_how3_t"></h4>
+          <p data-i18n="ld_how3_b"></p></div>
+      </div>
+    </section>
+
+    <section id="walrus">
+      <h2 data-i18n="ld_why_title"></h2>
+      <div class="split">
+        <div class="card"><p class="quote" data-i18n="ld_why1"></p></div>
+        <div class="card"><p class="quote" data-i18n="ld_why2"></p></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow" data-i18n="ld_who_title"></p>
+      <p class="who-line" data-i18n="ld_who"></p>
+      <p class="flow-note" data-i18n="ld_why2"></p>
+    </section>
+
+    <section>
+      <div class="final">
+        <h2 data-i18n="ld_h1"></h2>
+        <p data-i18n="ld_key_note"></p>
+        <a class="btn btn-p" href="/app" data-i18n="ld_cta"></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="wrap">
+  <span id="footBrand">Memoranda</span>
+  <span data-i18n="ld_footer"></span>
+</footer>
+
+<script>
+let T = {};
+
+const $ = (sel) => document.querySelector(sel);
+
+function setTheme(theme){
+  const chosen = theme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = chosen;
+  localStorage.setItem("memoranda_theme", chosen);
+  $("#themeColor").setAttribute("content",chosen === "light" ? "#f5f7f4" : "#0b0d10");
+  const button = $("#themeBtn");
+  if(button){button.textContent = chosen === "dark" ? "Light mode" : "Dark mode";
+    button.setAttribute("aria-label", chosen === "dark" ? "Switch to light theme" : "Switch to dark theme");}
+}
+
+function paint() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const t = T[el.getAttribute("data-i18n")];
+    if (t) el.textContent = t;
+  });
+  if (T.brand) {
+    document.title = T.brand;
+    $("#brandName").textContent = T.brand;
+    $("#footBrand").textContent = T.brand;
+    $(".mark").textContent = T.brand.trim().charAt(0).toUpperCase();
+  }
+}
+
+/* English on purpose: this page is the shop window, read by people who have
+   never heard of the product. The notebook still switches language, and that
+   is the one an Indonesian customer actually uses. Nothing here writes to the
+   saved language, so landing on the front page cannot flip the book. */
+(async function boot() {
+  setTheme(localStorage.getItem("memoranda_theme") || "dark");
+  $("#themeBtn").addEventListener("click",()=>setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+  try{const res = await fetch("/api/i18n?lang=en");T = await res.json();paint();}
+  catch(_err){document.querySelectorAll("[data-i18n]").forEach(el=>{if(!el.textContent.trim())el.textContent=el.getAttribute("data-i18n").replaceAll("_"," ");});}
+  document.documentElement.lang = "en";
+})();
+</script>
+</body>
+</html>
