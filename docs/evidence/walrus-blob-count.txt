@@ -1,4 +1,4 @@
-Walrus blob / memory count for the Memoranda agent
+Walrus blob / memory count for Memoranda
 Measured: 2026-10-02 (via the MemWal relayer recall API, prod)
 
 MemWalAccount object id : 0x11c739a672f9133e3c38b4ea363ed82abb4e7f7b225ab66dfe069c09f4f785f8
@@ -6,62 +6,94 @@ Agent public key (hex)  : c18652e39e6a7a1a74859e62ce1f72c30dc7c53b4dfd10f79cf490
 Account owner address   : 0xa8e63d9bf2518d23b9ae7f92782372a86c102763351471bbdd75a1aabc02c8d2
 Relayer                 : https://relayer.memory.walrus.xyz (prod, health ok)
 
-Method: MemWalSync.recall(<query>, limit=1000, namespace='fieldpack:<pack_id>')
-        .total = memories stored in that namespace on Walrus mainnet.
-        42 namespaces (one per book), 42/42 answered.
+Method
+------
+MemWalSync.recall(<query>, limit=1000, namespace='fieldpack:<pack_id>').total
+returns the number of memories stored in that namespace on Walrus mainnet.
 
-TOTAL MEMORIES / BLOBS  : 391
-(local journal lines    : 303 - lower, because some namespaces hold more than
-                          the local copy, e.g. cc0b8ed4 local=2 walrus=19)
+Namespaces were enumerated from the project's own records: every pack_id in
+data/packs.json, unioned with every local journal file. That is 49 namespaces,
+and 49 of 49 answered.
 
-Gate (Session 8, requirement 7): >= 10 blobs on mainnet  ->  PASSED (391)
+Scope note: this count covers ONLY the 'fieldpack:*' namespaces, which are this
+project's books. Other projects that share the operator's machine use different
+namespace names; probed and found empty under this account (graywake, memora,
+worldremembers, companion, leah, canon, default all returned total=0). Everything
+stored in this MemWalAccount is Memoranda.
 
---- per namespace ---
-namespaces: 42
-   1/42 05aca4a3   local=5   walrus=5
-   2/42 110f8e63   local=6   walrus=6
-   3/42 171a8925   local=7   walrus=11
-   4/42 17d28da3   local=7   walrus=9
-   5/42 1c6a12de   local=8   walrus=9
-   6/42 205479b0   local=7   walrus=11
-   7/42 21b520f2   local=6   walrus=6
-   8/42 265643d7   local=12  walrus=25
-   9/42 31126ba6   local=6   walrus=6
-  10/42 3421d097   local=7   walrus=7
-  11/42 353b6c8b   local=5   walrus=5
-  12/42 35e5da55   local=5   walrus=5
-  13/42 3619e5d9   local=11  walrus=11
-  14/42 5657daab   local=7   walrus=13
-  15/42 5d286b82   local=7   walrus=1
-  16/42 5d9ccd6d   local=1   walrus=1
-  17/42 620676a3   local=1   walrus=1
-  18/42 631ee0e8   local=17  walrus=29
-  19/42 639c00c1   local=1   walrus=1
-  20/42 657fa334   local=7   walrus=13
-  21/42 67b80073   local=5   walrus=1
-  22/42 67d96c01   local=5   walrus=5
-  23/42 73bedc7c   local=1   walrus=1
-  24/42 87a2edef   local=25  walrus=26
-  25/42 87a7e622   local=9   walrus=12
-  26/42 8aa96604   local=5   walrus=8
-  27/42 93425e7d   local=7   walrus=1
-  28/42 945b1517   local=17  walrus=34
-  29/42 993c8969   local=32  walrus=43
-  30/42 9cae3656   local=6   walrus=6
-  31/42 a40a5446   local=5   walrus=5
-  32/42 a921b567   local=7   walrus=7
-  33/42 a9f0c6d7   local=1   walrus=1
-  34/42 c32baaae   local=5   walrus=9
-  35/42 c97d2eeb   local=6   walrus=6
-  36/42 cacc1728   local=1   walrus=1
-  37/42 cc0b8ed4   local=2   walrus=19
-  38/42 cc305997   local=5   walrus=5
-  39/42 db60fdc6   local=1   walrus=1
-  40/42 dc6517f1   local=5   walrus=7
-  41/42 e1e27471   local=7   walrus=9
-  42/42 fb5ad664   local=13  walrus=9
+TOTAL MEMORIES / BLOBS  : 469
+
+The two books that carry real shop data, counted on their own:
+
+    Strong Ar     (993c8969) : 43
+    Berry Repair  (3619e5d9) : 11
+                            ----
+    subtotal                 : 54
+
+Gate (Session 8, requirement: >= 10 blobs on mainnet) -> PASSED.
+The full account clears it 46x over; the two real-shop books alone clear it 5x.
+
+An earlier measurement of 391 covered only the 42 namespaces that had a local
+journal file. Enumerating from packs.json as well surfaced 7 further namespaces
+with content (14f1a3f9, 1a479acc, 7db88609, 8636493e, 887b41d2, dd3e755d,
+e0ef2ae4), so 391 was a lower bound and 469 is the figure for this date.
+
+Note: the SDK's restore() summed over the same namespaces returns 9. Treat it as
+a lower bound; see the article and the filed MemWal issues for detail.
+
+--- per namespace (49) ---
+   1/49 05aca4a3  walrus=5
+   2/49 110f8e63  walrus=6
+   3/49 14f1a3f9  walrus=9
+   4/49 171a8925  walrus=11
+   5/49 17d28da3  walrus=9
+   6/49 1a479acc  walrus=11
+   7/49 1c6a12de  walrus=9
+   8/49 205479b0  walrus=11
+   9/49 21b520f2  walrus=6
+  10/49 265643d7  walrus=25
+  11/49 31126ba6  walrus=6
+  12/49 3421d097  walrus=7
+  13/49 353b6c8b  walrus=5
+  14/49 35e5da55  walrus=5
+  15/49 3619e5d9  walrus=11   <- Berry Repair
+  16/49 5657daab  walrus=13
+  17/49 5d286b82  walrus=1
+  18/49 5d9ccd6d  walrus=1
+  19/49 620676a3  walrus=1
+  20/49 631ee0e8  walrus=29
+  21/49 639c00c1  walrus=1
+  22/49 657fa334  walrus=13
+  23/49 67b80073  walrus=1
+  24/49 67d96c01  walrus=5
+  25/49 73bedc7c  walrus=1
+  26/49 7db88609  walrus=30
+  27/49 8636493e  walrus=8
+  28/49 87a2edef  walrus=26
+  29/49 87a7e622  walrus=12
+  30/49 887b41d2  walrus=10
+  31/49 8aa96604  walrus=8
+  32/49 93425e7d  walrus=1
+  33/49 945b1517  walrus=34
+  34/49 993c8969  walrus=43   <- Strong Ar
+  35/49 9cae3656  walrus=6
+  36/49 a40a5446  walrus=5
+  37/49 a921b567  walrus=7
+  38/49 a9f0c6d7  walrus=1
+  39/49 c32baaae  walrus=9
+  40/49 c97d2eeb  walrus=6
+  41/49 cacc1728  walrus=1
+  42/49 cc0b8ed4  walrus=19
+  43/49 cc305997  walrus=5
+  44/49 db60fdc6  walrus=1
+  45/49 dc6517f1  walrus=7
+  46/49 dd3e755d  walrus=9
+  47/49 e0ef2ae4  walrus=1
+  48/49 e1e27471  walrus=9
+  49/49 fb5ad664  walrus=9
 
 --- SUMMARY ---
-namespaces answered : 42/42
-TOTAL BLOBS (walrus): 391
-local journal lines : 303
+namespaces answered   : 49/49
+TOTAL BLOBS (walrus)  : 469
+two real-shop books   : 54
+local journal lines   : 303
