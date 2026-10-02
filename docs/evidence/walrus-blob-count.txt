@@ -1,37 +1,67 @@
 Records on Walrus mainnet, Memoranda
-Measured: 2026-10-02 (via the MemWal relayer recall API, prod)
+Measured: 2026-10-03 (via the MemWal relayer recall API, prod)
 
 MemWalAccount object id : 0x11c739a672f9133e3c38b4ea363ed82abb4e7f7b225ab66dfe069c09f4f785f8
 Agent public key (hex)  : c18652e39e6a7a1a74859e62ce1f72c30dc7c53b4dfd10f79cf4904ccaf8e5eb
 Account owner address   : 0xa8e63d9bf2518d23b9ae7f92782372a86c102763351471bbdd75a1aabc02c8d2
 Relayer                 : https://relayer.memory.walrus.xyz (prod, health ok)
 
+HOW TO COUNT, AND WHY THE OBVIOUS WAY IS WRONG
+---------------------------------------------
+recall() is a similarity search. It returns the SAME memory more than once for a
+single query, so summing len(results) over the namespaces overcounts. Measured on
+this account: fieldpack:945b1517 returns 34 results for 17 distinct memories.
+
+The number below is therefore deduplicated: results are normalised (whitespace
+collapsed) and counted as a set. Every figure was then cross-checked against the
+local append-only journal file for that namespace, which is written before the
+remote write is attempted and is the only exact listing this machine has.
+
+  method            account total    two real-use books (old write-up)
+  ----------------  -------------    --------------------------------
+  raw len(results)            495    54   <- overcount, duplicates included
+  deduplicated                368    43   <- correct
+
+The write-up, the repository, and the form originally reported 54. That figure
+came from the raw result count and was inflated by duplicate hits. It is corrected
+here to 43 for that pair, and superseded by the per-book figures below.
+
 THE BOOKS THAT CARRY REAL SHOP DATA
 -----------------------------------
-Two books, both written from Telegram by the operator of the shop, and read back
-from the web notebook.
+Six books, written by three people from three separate Telegram accounts, each
+book used from both the Telegram bot and the web notebook.
 
-    Strong Ar     (namespace fieldpack:993c8969)   43 records
-    Berry Repair  (namespace fieldpack:3619e5d9)   11 records
-                                                  -----------
-    the two shop books together                    54 records
+  namespace                  book                   records  account
+  ------------------------------------------------------------------
+  fieldpack:993c8969         Strong Ar                   32  1
+  fieldpack:87a2edef         Prima Jaya                  24  1
+  fieldpack:265643d7         Strong Arm Repairs          11  1
+  fieldpack:945b1517         Berry Service.              17  2
+  fieldpack:3619e5d9         Berry Repair                11  2
+  fieldpack:c321c6cc         Cahaya Motor                20  3
+  ------------------------------------------------------------------
+                             total                      115
 
-Both are air-conditioning / small-workshop books in USD. Strong Ar holds six
-customers, two of them settled in full and four still open. Berry Repair holds two
-customers.
+Every one of those six books clears ten records on its own, so the session gate of
+"at least 10 blobs written on mainnet" is met by any single one of them, and the
+submission-specific requirement of three users with ten or more memories each is
+met by accounts 1, 2 and 3 without leaning on the build books at all.
 
-54 records is the number reported against the session's gate of "at least 10 blobs
-written on mainnet". The gate is cleared five times over on the real-use books alone.
+The seventh real-use book, fieldpack:1c6a12de (Best Service, account 1), holds 8
+and is listed honestly rather than rounded up.
 
 THE REST OF THE ACCOUNT
 -----------------------
-The MemWalAccount also holds records written by the same operator while building and
-testing the app: books created to exercise language switching, currency handling,
-reminder scheduling and the queueing path. They are the same agent writing to the
-same account, and they are not evidence of real use.
+The MemWalAccount also holds books written by the same operator while building and
+testing the app: language switching, currency handling, reminder scheduling, and
+the queueing path. Three of those build books happen to exceed ten records:
 
-The account total is therefore higher than 54. It is deliberately not used as the
-real-use figure in the write-up, because most of it came from the build.
+  fieldpack:7db88609         Tukang AC Demo              18
+  fieldpack:631ee0e8         Buku Baru                   17
+  fieldpack:887b41d2         Tukang AC Demo              10
+
+They are the same agent writing to the same account and are not evidence of real
+use. They are listed so the boundary is explicit rather than implied.
 
 SCOPE
 -----
@@ -40,76 +70,82 @@ namespace names and were probed directly: graywake, graywake:main, worldremember
 memora, memora:main, companion, leah, canon and default all returned total=0 under
 this account.
 
-METHOD
-------
-MemWalSync.recall(<query>, limit=1000, namespace='fieldpack:<pack_id>').total
-returns the number of memories stored in that namespace on Walrus mainnet.
+METHOD IN FULL
+--------------
+  client = MemWalSync.create(key=..., account_id=..., env='prod')
+  r = client.recall(<generic ledger query>, limit=300,
+                    namespace='fieldpack:<pack_id>', max_distance=1.0)
+  count = len({' '.join(i.text.split()) for i in r.results if i.text.strip()})
 
 Namespaces were enumerated from the project's own records: every pack_id in
-data/packs.json, unioned with every local journal file. 49 namespaces, 49 of 49
-answered.
+data/packs.json, unioned with every local journal filename.
+Namespaces answered: 51/51.
 
-Note: the SDK's restore() summed over the same namespaces returns a much smaller
-number. It counts what the relayer has indexed and is a lower bound, not a total.
-Treat it as a lower bound. The two related defects are filed as issues on
-MystenLabs/MemWal.
+max_distance=1.0 disables the distance filter on purpose. At the default threshold
+the same namespaces return fewer rows, which is a second way to undercount.
 
---- the two shop books, per record group ---
-fieldpack:993c8969  Strong Ar       43
-fieldpack:3619e5d9  Berry Repair    11
+A third way: the SDK's restore() summed over the same namespaces returned 9 for
+this account while recall() returned three figures of magnitude more. restore()
+counts what the relayer has indexed and is a lower bound, not a total. Both the
+under- and over-counting directions are filed as issues on MystenLabs/MemWal.
 
---- all namespaces answered (49) ---
-   1/49 05aca4a3  walrus=5
-   2/49 110f8e63  walrus=6
-   3/49 14f1a3f9  walrus=9
-   4/49 171a8925  walrus=11
-   5/49 17d28da3  walrus=9
-   6/49 1a479acc  walrus=11
-   7/49 1c6a12de  walrus=9
-   8/49 205479b0  walrus=11
-   9/49 21b520f2  walrus=6
-  10/49 265643d7  walrus=25
-  11/49 31126ba6  walrus=6
-  12/49 3421d097  walrus=7
-  13/49 353b6c8b  walrus=5
-  14/49 35e5da55  walrus=5
-  15/49 3619e5d9  walrus=11   <- Berry Repair
-  16/49 5657daab  walrus=13
-  17/49 5d286b82  walrus=1
-  18/49 5d9ccd6d  walrus=1
-  19/49 620676a3  walrus=1
-  20/49 631ee0e8  walrus=29
-  21/49 639c00c1  walrus=1
-  22/49 657fa334  walrus=13
-  23/49 67b80073  walrus=1
-  24/49 67d96c01  walrus=5
-  25/49 73bedc7c  walrus=1
-  26/49 7db88609  walrus=30
-  27/49 8636493e  walrus=8
-  28/49 87a2edef  walrus=26
-  29/49 87a7e622  walrus=12
-  30/49 887b41d2  walrus=10
-  31/49 8aa96604  walrus=8
-  32/49 93425e7d  walrus=1
-  33/49 945b1517  walrus=34
-  34/49 993c8969  walrus=43   <- Strong Ar
-  35/49 9cae3656  walrus=6
-  36/49 a40a5446  walrus=5
-  37/49 a921b567  walrus=7
-  38/49 a9f0c6d7  walrus=1
-  39/49 c32baaae  walrus=9
-  40/49 c97d2eeb  walrus=6
-  41/49 cacc1728  walrus=1
-  42/49 cc0b8ed4  walrus=19
-  43/49 cc305997  walrus=5
-  44/49 db60fdc6  walrus=1
-  45/49 dc6517f1  walrus=7
-  46/49 dd3e755d  walrus=9
-  47/49 e0ef2ae4  walrus=1
-  48/49 e1e27471  walrus=9
-  49/49 fb5ad664  walrus=9
+--- every namespace answered, deduplicated ---
+   1/51  0325fc54  local=  1  unique=  1  returned=  1
+   2/51  05aca4a3  local=  5  unique=  5  returned=  5
+   3/51  110f8e63  local=  6  unique=  6  returned=  6
+   4/51  14f1a3f9  local=  0  unique=  9  returned=  9
+   5/51  171a8925  local=  7  unique=  7  returned= 11
+   6/51  17d28da3  local=  7  unique=  7  returned=  9
+   7/51  1a479acc  local=  0  unique=  6  returned= 11
+   8/51  1c6a12de  local=  8  unique=  8  returned=  9   <- account 1, real use
+   9/51  205479b0  local=  7  unique=  7  returned= 11
+  10/51  21b520f2  local=  6  unique=  6  returned=  6
+  11/51  265643d7  local= 12  unique= 11  returned= 25   <- account 1, real use
+  12/51  31126ba6  local=  6  unique=  6  returned=  6
+  13/51  3421d097  local=  7  unique=  7  returned=  7
+  14/51  353b6c8b  local=  5  unique=  5  returned=  5
+  15/51  35e5da55  local=  5  unique=  5  returned=  5
+  16/51  3619e5d9  local= 11  unique= 11  returned= 11   <- account 2, real use
+  17/51  5657daab  local=  7  unique=  7  returned= 13
+  18/51  5d286b82  local=  7  unique=  1  returned=  1
+  19/51  5d9ccd6d  local=  1  unique=  1  returned=  1
+  20/51  620676a3  local=  1  unique=  1  returned=  1
+  21/51  631ee0e8  local= 17  unique= 17  returned= 29   <- build book
+  22/51  639c00c1  local=  1  unique=  1  returned=  1
+  23/51  657fa334  local=  7  unique=  7  returned= 13
+  24/51  67b80073  local=  5  unique=  1  returned=  1
+  25/51  67d96c01  local=  5  unique=  5  returned=  5
+  26/51  73bedc7c  local=  1  unique=  1  returned=  1
+  27/51  7db88609  local=  0  unique= 18  returned= 30   <- build book
+  28/51  8636493e  local=  0  unique=  8  returned=  8
+  29/51  87a2edef  local= 25  unique= 24  returned= 26   <- account 1, real use
+  30/51  87a7e622  local=  9  unique=  9  returned= 12
+  31/51  887b41d2  local=  0  unique= 10  returned= 10   <- build book
+  32/51  8aa96604  local=  5  unique=  5  returned=  8
+  33/51  93425e7d  local=  7  unique=  1  returned=  1
+  34/51  945b1517  local= 17  unique= 17  returned= 34   <- account 2, real use
+  35/51  993c8969  local= 32  unique= 32  returned= 43   <- account 1, real use
+  36/51  9cae3656  local=  6  unique=  6  returned=  6
+  37/51  a40a5446  local=  5  unique=  5  returned=  5
+  38/51  a921b567  local=  7  unique=  7  returned=  7
+  39/51  a9f0c6d7  local=  1  unique=  1  returned=  1
+  40/51  c321c6cc  local= 28  unique= 20  returned= 25   <- account 3, real use
+  41/51  c32baaae  local=  5  unique=  5  returned=  9
+  42/51  c97d2eeb  local=  6  unique=  6  returned=  6
+  43/51  cacc1728  local=  1  unique=  1  returned=  1
+  44/51  cc0b8ed4  local=  2  unique=  9  returned= 19
+  45/51  cc305997  local=  5  unique=  5  returned=  5
+  46/51  db60fdc6  local=  1  unique=  1  returned=  1
+  47/51  dc6517f1  local=  5  unique=  5  returned=  7
+  48/51  dd3e755d  local=  0  unique=  8  returned=  9
+  49/51  e0ef2ae4  local=  0  unique=  1  returned=  1
+  50/51  e1e27471  local=  7  unique=  6  returned=  9
+  51/51  fb5ad664  local= 13  unique=  9  returned=  9
 
 --- SUMMARY ---
-namespaces answered        : 49/49
-two real-shop books        : 54 records
-gate (>= 10 on mainnet)    : passed, 5x over on the real-use books alone
+namespaces answered            : 51/51
+account total, deduplicated    : 368
+real-use books, 6 of them      : 115 records
+books clearing the 10 gate     : 6 real-use books, plus 3 build books
+users with >=10 memories each  : 3 (accounts 1, 2, 3)
+
