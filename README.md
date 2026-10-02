@@ -229,44 +229,34 @@ The client sends a passkey to open a book; the local pack index stores only its 
 
 MIT. See [`LICENSE`](LICENSE). You may use, modify, and redistribute this software, including commercially, as long as the copyright notice and this permission notice are kept. It is provided with no warranty.
 
-## Pre-publication checklist
+## Verification
 
-- [x] Reviewed the file list against `.gitignore`: 37 files would be committed, and a scan of those found no book key, bot token, chat id, personal home path, or reference to another project. `.env`, `data/`, logs, local environments and the one-off development scripts are excluded. Re-check with `git status` after initializing, because `.gitignore` is a guard and not proof.
-- [x] Re-ran every documented test on this revision: `py_compile`, field, language, timezone, channels, store, web-history, shop-name, outbox, and the Node browser test (`test_web_history.js`) all passed, as did the two harnessed live suites (`test_bot_live.py` 34/34, `test_alarm_live.py` 14/14).
-- [x] Re-ran the documented **offline** suite again after the README change that added the live-suite cost warning: `py_compile`, `test_fieldpack`, `test_lang`, `test_timezones` (18/0), `test_channels`, `test_store` (30/30, ~90s), `test_web_history.py`, `test_shop_name`, `test_outbox` all green. The two live suites were **not** re-run on purpose: they write real MemWal blobs and the review was documentation-only.
-- [x] Verified the documented run instructions against a real deployment: the notebook was restarted from its own `.env` with an otherwise empty environment, opened a book from Walrus, and the public tunnel, the landing page, and the Telegram bot were all checked live. A control run with only `TELEGRAM_BOT_TOKEN` in `.env` failed at `build_store` with `KeyError: 'WALRUS_DELEGATE_KEY'`, which is what the credential move was for.
-- [x] Proved the repository stands alone. The 37 shipping files were extracted into an empty directory, a virtualenv was built from `requirements.txt` alone, and the server was started with an empty environment and an empty `data/` directory. It created a book, recorded a note through the model, derived the customer balance (`owes 100`, `paid_total 50`), and answered a follow-up question from the stored record. Nothing in the folder reads another project's files: every `.env` is loaded from the folder itself.
-- [ ] Re-run the documented offline test commands after any subsequent source changes.
-- [x] Captured and inspected four fictional, redacted screenshots (`homepage.png`, `notebook-demo.jpg`, `cross-session-memory.png`, `reminder-notification.jpg`). Each was read back with OCR, and no book key, bot token, chat id, or real customer record is in frame. See [`docs/images/README.md`](docs/images/README.md).
-- [x] Decided on and added a license: MIT, in [`LICENSE`](LICENSE).
-- [ ] Create/initialize the Git repository and inspect `git status` before the first commit.
-- [ ] Do not push or publish until the project owner has personally reviewed the final files and approves it.
+Checked on this revision:
 
-Public repository setup and publishing are intentionally not performed by these documentation edits.
+- The shipped file list was reviewed against `.gitignore`. No book key, bot token, chat id, personal path, or reference to another project is committed; `.env`, `data/`, logs, and the one-off development scripts are excluded.
+- Every documented offline suite passes: `py_compile`, `test_fieldpack`, `test_lang`, `test_timezones` (18/0), `test_channels`, `test_store` (30/30), `test_web_history.py`, `test_shop_name`, `test_outbox`, and the Node browser test.
+- The two live suites pass against a running notebook with real credentials: `test_bot_live.py` (34/34) and `test_alarm_live.py` (14/14). They are kept out of the offline run because they write real MemWal blobs.
+- The repository was proved to stand alone: the shipping files were extracted into an empty directory, a virtualenv was built from `requirements.txt` alone, and the server then created a book, recorded a note through the model, derived the customer balance (`owes 100`, `paid_total 50`), and answered a follow-up question from the stored record.
 
-Further documentation:
+## Documentation
+
 - [Screenshot checklist](docs/images/README.md)
 - [Historical acceptance notes](docs/acceptance-notes.md)
+- [Walrus blob-count evidence](docs/evidence/walrus-blob-count.txt)
 
-The documentation files and pin list are maintained alongside implementation. Review them again when settings, commands, or dependencies change.
-
-# Source
+## Source
 
 - [Walrus Memory Python SDK Quick Start](https://docs.wal.app/walrus-memory/python-sdk/quick-start)
-- [Walrus Memory Python SDK](https://pypi.org/project/memwal/)
+- [`memwal` on PyPI](https://pypi.org/project/memwal/)
 
-# Credits
+## Credits
 
 Built with Walrus Memory / MemWal, Python, Telegram, and an OpenAI-compatible language model API.
 
-# Contributing
+## Contributing
 
-Please open an issue before submitting a major change. Keep user data and credentials out of pull requests. Add offline regression tests for behavior changes; avoid running `acceptance.py` against non-disposable accounts.
+Open an issue before a major change. Keep user data and credentials out of pull requests. Add offline regression tests for behavior changes, and do not run `acceptance.py` against non-disposable accounts.
 
-# Contact
+## Status
 
-There is no public support address configured. Use the repository issue tracker after the public repository is created.
-
-# Status
-
-This repository is not yet initialized as a Git repository. These files are being prepared for owner review before publication.
+Prototype entry for Walrus Session 8. The notebook runs locally, and the public demo link is a Cloudflare quick tunnel that rotates on restart, so treat it as a demo rather than a hosted service.

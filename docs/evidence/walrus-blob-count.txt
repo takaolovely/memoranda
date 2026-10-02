@@ -1,0 +1,67 @@
+Walrus blob / memory count for the Memoranda agent
+Measured: 2026-10-02 (via the MemWal relayer recall API, prod)
+
+MemWalAccount object id : 0x11c739a672f9133e3c38b4ea363ed82abb4e7f7b225ab66dfe069c09f4f785f8
+Agent public key (hex)  : c18652e39e6a7a1a74859e62ce1f72c30dc7c53b4dfd10f79cf4904ccaf8e5eb
+Account owner address   : 0xa8e63d9bf2518d23b9ae7f92782372a86c102763351471bbdd75a1aabc02c8d2
+Relayer                 : https://relayer.memory.walrus.xyz (prod, health ok)
+
+Method: MemWalSync.recall(<query>, limit=1000, namespace='fieldpack:<pack_id>')
+        .total = memories stored in that namespace on Walrus mainnet.
+        42 namespaces (one per book), 42/42 answered.
+
+TOTAL MEMORIES / BLOBS  : 391
+(local journal lines    : 303 - lower, because some namespaces hold more than
+                          the local copy, e.g. cc0b8ed4 local=2 walrus=19)
+
+Gate (Session 8, requirement 7): >= 10 blobs on mainnet  ->  PASSED (391)
+
+--- per namespace ---
+namespaces: 42
+   1/42 05aca4a3   local=5   walrus=5
+   2/42 110f8e63   local=6   walrus=6
+   3/42 171a8925   local=7   walrus=11
+   4/42 17d28da3   local=7   walrus=9
+   5/42 1c6a12de   local=8   walrus=9
+   6/42 205479b0   local=7   walrus=11
+   7/42 21b520f2   local=6   walrus=6
+   8/42 265643d7   local=12  walrus=25
+   9/42 31126ba6   local=6   walrus=6
+  10/42 3421d097   local=7   walrus=7
+  11/42 353b6c8b   local=5   walrus=5
+  12/42 35e5da55   local=5   walrus=5
+  13/42 3619e5d9   local=11  walrus=11
+  14/42 5657daab   local=7   walrus=13
+  15/42 5d286b82   local=7   walrus=1
+  16/42 5d9ccd6d   local=1   walrus=1
+  17/42 620676a3   local=1   walrus=1
+  18/42 631ee0e8   local=17  walrus=29
+  19/42 639c00c1   local=1   walrus=1
+  20/42 657fa334   local=7   walrus=13
+  21/42 67b80073   local=5   walrus=1
+  22/42 67d96c01   local=5   walrus=5
+  23/42 73bedc7c   local=1   walrus=1
+  24/42 87a2edef   local=25  walrus=26
+  25/42 87a7e622   local=9   walrus=12
+  26/42 8aa96604   local=5   walrus=8
+  27/42 93425e7d   local=7   walrus=1
+  28/42 945b1517   local=17  walrus=34
+  29/42 993c8969   local=32  walrus=43
+  30/42 9cae3656   local=6   walrus=6
+  31/42 a40a5446   local=5   walrus=5
+  32/42 a921b567   local=7   walrus=7
+  33/42 a9f0c6d7   local=1   walrus=1
+  34/42 c32baaae   local=5   walrus=9
+  35/42 c97d2eeb   local=6   walrus=6
+  36/42 cacc1728   local=1   walrus=1
+  37/42 cc0b8ed4   local=2   walrus=19
+  38/42 cc305997   local=5   walrus=5
+  39/42 db60fdc6   local=1   walrus=1
+  40/42 dc6517f1   local=5   walrus=7
+  41/42 e1e27471   local=7   walrus=9
+  42/42 fb5ad664   local=13  walrus=9
+
+--- SUMMARY ---
+namespaces answered : 42/42
+TOTAL BLOBS (walrus): 391
+local journal lines : 303
